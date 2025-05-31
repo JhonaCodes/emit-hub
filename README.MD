@@ -1,50 +1,50 @@
 # 🚀 EmitHub - Real-time Broadcasting Microservice
 
-**EmitHub** es un microservicio robusto para comunicación en tiempo real construido en Rust con Actix-web y ReDB. Permite crear canales de emisión aislados donde múltiples clientes pueden conectarse y recibir mensajes broadcast instantáneamente.
+**EmitHub** is a robust microservice for real-time communication built in Rust with Actix-web and ReDB. It enables creating isolated broadcasting channels where multiple clients can connect and receive instant broadcast messages.
 
 ---
 
-## 📋 Tabla de Contenidos
+## 📋 Table of Contents
 
-- [🎯 Características](#-características)
-- [🏗️ Arquitectura](#️-arquitectura)
-- [📦 Instalación](#-instalación)
-- [⚙️ Configuración](#️-configuración)
-- [🚀 Inicio Rápido](#-inicio-rápido)
+- [🎯 Features](#-features)
+- [🏗️ Architecture](#️-architecture)
+- [📦 Installation](#-installation)
+- [⚙️ Configuration](#️-configuration)
+- [🚀 Quick Start](#-quick-start)
 - [📡 API Reference](#-api-reference)
 - [🔌 WebSocket](#-websocket)
-- [💼 Casos de Uso](#-casos-de-uso)
-- [🧪 Ejemplos Prácticos](#-ejemplos-prácticos)
-- [🐳 Deploy](#-deploy)
-- [🔧 Desarrollo](#-desarrollo)
+- [💼 Use Cases](#-use-cases)
+- [🧪 Practical Examples](#-practical-examples)
+- [🐳 Deployment](#-deployment)
+- [🔧 Development](#-development)
 
 ---
 
-## 🎯 Características
+## 🎯 Features
 
 ### ✅ **Core Features**
-- **Canales Aislados**: Cada canal es independiente con su propio estado
-- **Control de Emisión**: Start/Pause/Stop granular por canal
-- **WebSocket Real-time**: Conexiones bidireccionales de baja latencia
-- **Persistencia Opcional**: Mensajes guardados en ReDB si se configura
-- **Zero Dependencies**: Una sola binaria con base de datos embebida
+- **Isolated Channels**: Each channel is independent with its own state
+- **Emission Control**: Granular Start/Pause/Stop per channel
+- **Real-time WebSocket**: Low-latency bidirectional connections
+- **Optional Persistence**: Messages stored in ReDB when configured
+- **Zero Dependencies**: Single binary with embedded database
 
 ### ✅ **Enterprise Ready**
-- **Health Checks**: Monitoreo de salud del servicio
-- **Structured Logging**: Logs con formato JSON para análisis
-- **CORS Configurable**: Soporte para aplicaciones web
-- **Rate Limiting**: Control de velocidad de mensajes
-- **Configuración Flexible**: Variables de entorno y archivos TOML
+- **Health Checks**: Service health monitoring
+- **Structured Logging**: JSON-formatted logs for analysis
+- **Configurable CORS**: Support for web applications
+- **Rate Limiting**: Message speed control
+- **Flexible Configuration**: Environment variables and TOML files
 
 ### ✅ **Developer Experience**
-- **Documentación Integrada**: `/docs` endpoint con ejemplos
-- **Hot Reload Config**: Recarga configuración sin reiniciar
-- **Testing Ready**: APIs fáciles de testear automáticamente
-- **Self-Contained**: Sin dependencias externas para funcionar
+- **Integrated Documentation**: `/docs` endpoint with examples
+- **Hot Config Reload**: Reload configuration without restart
+- **Testing Ready**: APIs easy to test automatically
+- **Self-Contained**: No external dependencies to run
 
 ---
 
-## 🏗️ Arquitectura
+## 🏗️ Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -68,90 +68,90 @@
                     └───────────────────────────┘
 ```
 
-### **Componentes Principales:**
+### **Main Components:**
 
-- **API Layer**: REST endpoints para gestión de canales
-- **WebSocket Layer**: Conexiones en tiempo real para clientes
-- **Channel Manager**: Lógica de estado y broadcasting
-- **Persistence Layer**: ReDB para almacenamiento local
-- **Configuration**: Sistema flexible de configuración
+- **API Layer**: REST endpoints for channel management
+- **WebSocket Layer**: Real-time connections for clients
+- **Channel Manager**: State logic and broadcasting
+- **Persistence Layer**: ReDB for local storage
+- **Configuration**: Flexible configuration system
 
 ---
 
-## 📦 Instalación
+## 📦 Installation
 
-### **Prerrequisitos**
+### **Prerequisites**
 - Rust 1.70+
 - Cargo
-- (Opcional) Docker para deployment
+- (Optional) Docker for deployment
 
-### **Método 1: Desde Código Fuente**
+### **Method 1: From Source Code**
 
 ```bash
-# Clonar repositorio
+# Clone repository
 git clone https://github.com/your-org/emit-hub.git
 cd emit-hub
 
-# Construir
+# Build
 cargo build --release
 
-# Ejecutar
+# Run
 ./target/release/emit-hub
 ```
 
-### **Método 2: Cargo Install**
+### **Method 2: Cargo Install**
 
 ```bash
-# Instalar desde crates.io
+# Install from crates.io
 cargo install emit-hub
 
-# Ejecutar
+# Run
 emit-hub
 ```
 
-### **Método 3: Docker**
+### **Method 3: Docker**
 
 ```bash
-# Construir imagen
+# Build image
 docker build -t emit-hub .
 
-# Ejecutar
+# Run
 docker run -p 8080:8080 emit-hub
 ```
 
 ---
 
-## ⚙️ Configuración
+## ⚙️ Configuration
 
-### **Variables de Entorno**
+### **Environment Variables**
 
 ```bash
-# Configuración del Servidor
+# Server Configuration
 export EMIT_HUB_HOST=0.0.0.0              # Host (default: 127.0.0.1)
-export EMIT_HUB_PORT=3000                 # Puerto (default: 8080)
-export EMIT_HUB_LOG_LEVEL=debug           # Nivel de log (default: info)
+export EMIT_HUB_PORT=3000                 # Port (default: 8080)
+export EMIT_HUB_LOG_LEVEL=debug           # Log level (default: info)
 
-# Base de Datos
-export EMIT_HUB_DB_PATH=./data/hub.redb   # Archivo ReDB (default: emit_hub.redb)
+# Database
+export EMIT_HUB_DB_PATH=./data/hub.redb   # ReDB file (default: emit_hub.redb)
 
-# Límites
-export EMIT_HUB_MAX_CONNECTIONS=5000      # Max conexiones por canal (default: 1000)
-export EMIT_HUB_MESSAGE_SIZE_LIMIT=2097152 # Max tamaño mensaje 2MB (default: 1MB)
+# Limits
+export EMIT_HUB_MAX_CONNECTIONS=5000      # Max connections per channel (default: 1000)
+export EMIT_HUB_MESSAGE_SIZE_LIMIT=2097152 # Max message size 2MB (default: 1MB)
 
 # WebSocket
-export EMIT_HUB_WS_TIMEOUT=60             # Timeout conexión segundos (default: 30)
-export EMIT_HUB_WS_PING_INTERVAL=45       # Intervalo ping segundos (default: 30)
+export EMIT_HUB_WS_TIMEOUT=60             # Connection timeout seconds (default: 30)
+export EMIT_HUB_WS_PING_INTERVAL=45       # Ping interval seconds (default: 30)
 
 # CORS
-export EMIT_HUB_CORS_ORIGINS="*"          # Orígenes permitidos (default: localhost)
+export EMIT_HUB_CORS_ORIGINS="*"          # Allowed origins (default: localhost)
 
-# Persistencia
-export EMIT_HUB_PERSIST_MESSAGES=true     # Guardar mensajes (default: false)
-export EMIT_HUB_MESSAGE_RETENTION_DAYS=90 # Días retención (default: 30)
-export EMIT_HUB_AUTO_BACKUP=true          # Backup automático (default: false)
+# Persistence
+export EMIT_HUB_PERSIST_MESSAGES=true     # Save messages (default: false)
+export EMIT_HUB_MESSAGE_RETENTION_DAYS=90 # Retention days (default: 30)
+export EMIT_HUB_AUTO_BACKUP=true          # Auto backup (default: false)
 ```
 
-### **Archivo de Configuración (emit_hub.toml)**
+### **Configuration File (emit_hub.toml)**
 
 ```toml
 host = "0.0.0.0"
@@ -181,32 +181,32 @@ auto_backup = true
 backup_interval_hours = 12
 ```
 
-### **Ayuda de Configuración**
+### **Configuration Help**
 
 ```bash
-# Ver todas las variables disponibles
+# View all available variables
 emit-hub --show-env-vars
 
-# Generar archivo de configuración de ejemplo
+# Generate example configuration file
 emit-hub --generate-config > emit_hub.toml
 ```
 
 ---
 
-## 🚀 Inicio Rápido
+## 🚀 Quick Start
 
-### **1. Iniciar el Servidor**
+### **1. Start the Server**
 
 ```bash
-# Configuración básica
+# Basic configuration
 export EMIT_HUB_HOST=0.0.0.0
 export EMIT_HUB_PORT=8080
 
-# Ejecutar
+# Run
 cargo run
 ```
 
-**Output esperado:**
+**Expected output:**
 ```
 🚀 EmitHub - Real-time Broadcasting Service
    Version: 0.1.0
@@ -218,14 +218,14 @@ cargo run
 2024-06-01T10:30:00.130Z  INFO emit_hub: ✅ Application state initialized successfully
 ```
 
-### **2. Crear un Canal**
+### **2. Create a Channel**
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/channels \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Sistema de Turnos",
-    "description": "Canal para llamar turnos en clínica",
+    "name": "Queue System",
+    "description": "Channel for calling queue numbers in clinic",
     "settings": {
       "max_connections": 100,
       "allow_client_messages": true,
@@ -235,12 +235,12 @@ curl -X POST http://localhost:8080/api/v1/channels \
   }'
 ```
 
-**Respuesta:**
+**Response:**
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
-  "name": "Sistema de Turnos",
-  "description": "Canal para llamar turnos en clínica",
+  "name": "Queue System",
+  "description": "Channel for calling queue numbers in clinic",
   "status": "Created",
   "created_at": "2024-06-01T10:35:00Z",
   "updated_at": "2024-06-01T10:35:00Z",
@@ -253,46 +253,46 @@ curl -X POST http://localhost:8080/api/v1/channels \
 }
 ```
 
-### **3. Activar el Canal**
+### **3. Activate the Channel**
 
 ```bash
-# Usar el UUID del paso anterior
+# Use the UUID from the previous step
 curl -X PUT http://localhost:8080/api/v1/channels/550e8400-e29b-41d4-a716-446655440000/start
 ```
 
-### **4. Conectar Clientes**
+### **4. Connect Clients**
 
 ```javascript
-// Cliente JavaScript
+// JavaScript client
 const channelId = '550e8400-e29b-41d4-a716-446655440000';
 const ws = new WebSocket(`ws://localhost:8080/api/v1/channels/${channelId}/ws`);
 
 ws.onopen = function() {
-    console.log('🟢 Conectado al canal');
+    console.log('🟢 Connected to channel');
 };
 
 ws.onmessage = function(event) {
     const data = JSON.parse(event.data);
-    console.log('📨 Mensaje recibido:', data);
+    console.log('📨 Message received:', data);
     
     if (data.status === 'broadcast') {
-        console.log('🎯 Turno llamado:', data.message);
-        // Mostrar en pantalla, reproducir sonido, etc.
+        console.log('🎯 Queue called:', data.message);
+        // Display on screen, play sound, etc.
     }
 };
 
 ws.onerror = function(error) {
-    console.error('❌ Error de conexión:', error);
+    console.error('❌ Connection error:', error);
 };
 
-// Enviar mensaje (si está permitido)
-ws.send('Cliente conectado desde sala de espera');
+// Send message (if allowed)
+ws.send('Client connected from waiting room');
 ```
 
-### **5. Emitir Turnos**
+### **5. Broadcast Queue Numbers**
 
 ```bash
-# Llamar turno A004
+# Call queue A004
 curl -X POST http://localhost:8080/api/v1/channels/550e8400-e29b-41d4-a716-446655440000/broadcast \
   -H "Content-Type: application/json" \
   -d '{
@@ -301,7 +301,7 @@ curl -X POST http://localhost:8080/api/v1/channels/550e8400-e29b-41d4-a716-44665
   }'
 ```
 
-**Los clientes reciben:**
+**Clients receive:**
 ```json
 {
   "status": "broadcast",
@@ -320,14 +320,14 @@ curl -X POST http://localhost:8080/api/v1/channels/550e8400-e29b-41d4-a716-44665
 
 ### **🏢 Channel Management**
 
-#### **Crear Canal**
+#### **Create Channel**
 ```http
 POST /channels
 Content-Type: application/json
 
 {
-  "name": "Nombre del Canal",
-  "description": "Descripción opcional",
+  "name": "Channel Name",
+  "description": "Optional description",
   "settings": {
     "max_connections": 1000,
     "allow_client_messages": true,
@@ -337,38 +337,38 @@ Content-Type: application/json
 }
 ```
 
-#### **Listar Canales**
+#### **List Channels**
 ```http
 GET /channels
 ```
 
-#### **Obtener Canal**
+#### **Get Channel**
 ```http
 GET /channels/{channel_id}
 ```
 
-#### **Iniciar Emisión**
+#### **Start Broadcasting**
 ```http
 PUT /channels/{channel_id}/start
 ```
 
-#### **Pausar Emisión**
+#### **Pause Broadcasting**
 ```http
 PUT /channels/{channel_id}/pause
 ```
 
-#### **Detener Emisión**
+#### **Stop Broadcasting**
 ```http
 PUT /channels/{channel_id}/stop
 ```
 
-#### **Emitir Mensaje**
+#### **Broadcast Message**
 ```http
 POST /channels/{channel_id}/broadcast
 Content-Type: application/json
 
 {
-  "content": "Mensaje a enviar",
+  "content": "Message to send",
   "message_type": "Broadcast"
 }
 ```
@@ -380,7 +380,7 @@ Content-Type: application/json
 GET /health
 ```
 
-**Respuesta:**
+**Response:**
 ```json
 {
   "status": "healthy",
@@ -395,7 +395,7 @@ GET /health
 GET /ready
 ```
 
-**Respuesta:**
+**Response:**
 ```json
 {
   "status": "ready",
@@ -406,14 +406,14 @@ GET /ready
 }
 ```
 
-### **📄 Información y Documentación**
+### **📄 Information and Documentation**
 
-#### **Información del Servicio**
+#### **Service Information**
 ```http
 GET /
 ```
 
-#### **Documentación Interactiva**
+#### **Interactive Documentation**
 ```http
 GET /docs
 ```
@@ -424,36 +424,36 @@ GET /docs
 
 ### **Endpoint**: `ws://localhost:8080/api/v1/channels/{channel_id}/ws`
 
-### **Estados de Conexión**
+### **Connection States**
 
-#### **✅ Conexión Exitosa**
+#### **✅ Successful Connection**
 ```json
 {
   "status": "connected",
-  "message": "Connected to channel: Sistema de Turnos",
+  "message": "Connected to channel: Queue System",
   "channel_id": "550e8400-e29b-41d4-a716-446655440000",
   "timestamp": "2024-06-01T10:35:00Z",
   "data": {
-    "channel": { /* info del canal */ },
+    "channel": { /* channel info */ },
     "connection_id": "123e4567-e89b-12d3-a456-426614174000"
   }
 }
 ```
 
-#### **❌ Canal No Activo**
+#### **❌ Channel Not Active**
 ```json
 {
   "status": "denied",
-  "message": "Channel Sistema de Turnos is not active",
+  "message": "Channel Queue System is not active",
   "channel_id": "550e8400-e29b-41d4-a716-446655440000",
   "timestamp": "2024-06-01T10:35:00Z",
   "data": null
 }
 ```
 
-### **Tipos de Mensajes**
+### **Message Types**
 
-#### **Broadcast del Servidor**
+#### **Server Broadcast**
 ```json
 {
   "status": "broadcast",
@@ -464,33 +464,33 @@ GET /docs
 }
 ```
 
-#### **Mensaje de Cliente**
+#### **Client Message**
 ```json
 {
   "status": "client_message",
-  "message": "Client message in Sistema de Turnos: Hola",
+  "message": "Client message in Queue System: Hello",
   "channel_id": "550e8400-e29b-41d4-a716-446655440000",
   "timestamp": "2024-06-01T10:41:00Z",
   "data": {
-    "original_message": "Hola",
+    "original_message": "Hello",
     "sender": "client"
   }
 }
 ```
 
-### **Manejo de Errores WebSocket**
+### **WebSocket Error Handling**
 
 ```javascript
 ws.onerror = function(error) {
-    console.error('Error WebSocket:', error);
+    console.error('WebSocket Error:', error);
 };
 
 ws.onclose = function(event) {
     if (event.wasClean) {
-        console.log('Conexión cerrada limpiamente');
+        console.log('Connection closed cleanly');
     } else {
-        console.log('Conexión perdida, reintentando...');
-        // Implementar reconexión automática
+        console.log('Connection lost, retrying...');
+        // Implement automatic reconnection
         setTimeout(() => {
             connectWebSocket();
         }, 5000);
@@ -500,18 +500,18 @@ ws.onclose = function(event) {
 
 ---
 
-## 💼 Casos de Uso
+## 💼 Use Cases
 
-### **🏥 Sistema de Turnos Médicos**
+### **🏥 Medical Queue System**
 
-**Escenario**: Clínica con múltiples consultorios y sala de espera con pantallas.
+**Scenario**: Clinic with multiple consultation rooms and waiting room with displays.
 
 ```bash
-# 1. Crear canal por consultorio
+# 1. Create channel per consultation room
 curl -X POST http://localhost:8080/api/v1/channels \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Consultorio Dr. García",
+    "name": "Dr. Garcia Office",
     "settings": {
       "max_connections": 50,
       "allow_client_messages": false,
@@ -519,24 +519,24 @@ curl -X POST http://localhost:8080/api/v1/channels \
     }
   }'
 
-# 2. Activar canal
+# 2. Activate channel
 curl -X PUT http://localhost:8080/api/v1/channels/{channel_id}/start
 
-# 3. Pantallas se conectan automáticamente
-# 4. Recepcionista llama turnos
+# 3. Displays connect automatically
+# 4. Receptionist calls queue numbers
 curl -X POST http://localhost:8080/api/v1/channels/{channel_id}/broadcast \
   -d '{"content": "A004", "message_type": "Broadcast"}'
 ```
 
-### **🏢 Alertas Corporativas**
+### **🏢 Corporate Alerts**
 
-**Escenario**: Empresa con alertas críticas por departamento.
+**Scenario**: Company with critical alerts per department.
 
 ```bash
-# Canal por departamento
+# Channel per department
 curl -X POST http://localhost:8080/api/v1/channels \
   -d '{
-    "name": "Alertas IT",
+    "name": "IT Alerts",
     "settings": {
       "max_connections": 200,
       "allow_client_messages": true,
@@ -544,17 +544,17 @@ curl -X POST http://localhost:8080/api/v1/channels \
     }
   }'
 
-# Sistema de monitoreo envía alertas
+# Monitoring system sends alerts
 curl -X POST http://localhost:8080/api/v1/channels/{channel_id}/broadcast \
-  -d '{"content": "🚨 Servidor principal caído", "message_type": "Broadcast"}'
+  -d '{"content": "🚨 Main server down", "message_type": "Broadcast"}'
 ```
 
-### **📊 Dashboard en Tiempo Real**
+### **📊 Real-time Dashboard**
 
-**Escenario**: Métricas de ventas actualizándose en vivo.
+**Scenario**: Sales metrics updating live.
 
 ```javascript
-// Cliente Dashboard
+// Dashboard client
 const ws = new WebSocket(`ws://localhost:8080/api/v1/channels/${metricsChannelId}/ws`);
 
 ws.onmessage = function(event) {
@@ -566,7 +566,7 @@ ws.onmessage = function(event) {
     }
 };
 
-// Sistema de ventas envía updates cada minuto
+// Sales system sends updates every minute
 setInterval(() => {
     const metrics = {
         sales_today: 15420,
@@ -585,12 +585,12 @@ setInterval(() => {
 }, 60000);
 ```
 
-### **🎮 Notificaciones de Juego**
+### **🎮 Game Notifications**
 
-**Escenario**: Notificar eventos en tiempo real a jugadores.
+**Scenario**: Notify real-time events to players.
 
 ```bash
-# Canal para eventos del juego
+# Channel for game events
 curl -X POST http://localhost:8080/api/v1/channels \
   -d '{
     "name": "Game Events",
@@ -601,16 +601,16 @@ curl -X POST http://localhost:8080/api/v1/channels \
     }
   }'
 
-# Evento: nuevo jugador se une
+# Event: new player joins
 curl -X POST http://localhost:8080/api/v1/channels/{channel_id}/broadcast \
   -d '{"content": "🎉 Player MasterGamer joined the server!", "message_type": "Broadcast"}'
 ```
 
 ---
 
-## 🧪 Ejemplos Prácticos
+## 🧪 Practical Examples
 
-### **Cliente Dart (Flutter)**
+### **Dart Client (Flutter)**
 
 ```dart
 import 'dart:convert';
@@ -647,21 +647,21 @@ class EmitHubClient {
   void handleMessage(Map<String, dynamic> data) {
     switch (data['status']) {
       case 'broadcast':
-        print('🎯 Turno llamado: ${data['message']}');
-        showTurnNotification(data['message']);
+        print('🎯 Queue called: ${data['message']}');
+        showQueueNotification(data['message']);
         break;
       case 'connected':
-        print('✅ Conectado al canal');
+        print('✅ Connected to channel');
         break;
       default:
-        print('📨 Mensaje: ${data['message']}');
+        print('📨 Message: ${data['message']}');
     }
   }
   
-  void showTurnNotification(String turn) {
-    // Mostrar notificación en Flutter
-    // Reproducir sonido
-    // Actualizar UI
+  void showQueueNotification(String queue) {
+    // Show notification in Flutter
+    // Play sound
+    // Update UI
   }
   
   void disconnect() {
@@ -670,7 +670,7 @@ class EmitHubClient {
 }
 ```
 
-### **Cliente React (JavaScript)**
+### **React Client (JavaScript)**
 
 ```javascript
 import React, { useState, useEffect } from 'react';
@@ -696,7 +696,7 @@ const EmitHubClient = ({ channelId }) => {
 
     websocket.onopen = () => {
       setConnectionStatus('connected');
-      console.log('🟢 Conectado a EmitHub');
+      console.log('🟢 Connected to EmitHub');
     };
 
     websocket.onmessage = (event) => {
@@ -705,19 +705,19 @@ const EmitHubClient = ({ channelId }) => {
       setMessages(prev => [...prev, data]);
       
       if (data.status === 'broadcast') {
-        // Mostrar notificación toast
+        // Show toast notification
         showNotification(data.message);
         
-        // Reproducir sonido
+        // Play sound
         playNotificationSound();
       }
     };
 
     websocket.onclose = () => {
       setConnectionStatus('disconnected');
-      console.log('🔴 Desconectado de EmitHub');
+      console.log('🔴 Disconnected from EmitHub');
       
-      // Reconectar automáticamente
+      // Auto-reconnect
       setTimeout(connectWebSocket, 5000);
     };
 
@@ -725,8 +725,8 @@ const EmitHubClient = ({ channelId }) => {
   };
 
   const showNotification = (message) => {
-    // Usar biblioteca de notificaciones como react-toast
-    toast.success(`🎯 Turno: ${message}`, {
+    // Use notification library like react-toast
+    toast.success(`🎯 Queue: ${message}`, {
       position: 'top-center',
       autoClose: 10000,
     });
@@ -740,7 +740,7 @@ const EmitHubClient = ({ channelId }) => {
   return (
     <div className="emit-hub-client">
       <div className={`status ${connectionStatus}`}>
-        Estado: {connectionStatus === 'connected' ? '🟢 Conectado' : '🔴 Desconectado'}
+        Status: {connectionStatus === 'connected' ? '🟢 Connected' : '🔴 Disconnected'}
       </div>
       
       <div className="messages">
@@ -760,7 +760,7 @@ const EmitHubClient = ({ channelId }) => {
 export default EmitHubClient;
 ```
 
-### **Cliente Python**
+### **Python Client**
 
 ```python
 import asyncio
@@ -779,12 +779,12 @@ class EmitHubClient:
         
         try:
             self.websocket = await websockets.connect(uri)
-            logging.info(f"🟢 Conectado a EmitHub: {uri}")
+            logging.info(f"🟢 Connected to EmitHub: {uri}")
             
             await self.listen_messages()
             
         except Exception as e:
-            logging.error(f"❌ Error conectando: {e}")
+            logging.error(f"❌ Connection error: {e}")
             
     async def listen_messages(self):
         async for message in self.websocket:
@@ -799,21 +799,21 @@ class EmitHubClient:
         message = data.get('message')
         
         if status == 'broadcast':
-            print(f"🎯 Turno llamado: {message}")
-            # Aquí puedes agregar lógica específica
-            # como enviar email, actualizar base de datos, etc.
+            print(f"🎯 Queue called: {message}")
+            # Here you can add specific logic
+            # like sending email, updating database, etc.
             
         elif status == 'connected':
-            print(f"✅ Conectado al canal: {data.get('channel_id')}")
+            print(f"✅ Connected to channel: {data.get('channel_id')}")
             
         else:
-            print(f"📨 Mensaje: {message}")
+            print(f"📨 Message: {message}")
             
     async def disconnect(self):
         if self.websocket:
             await self.websocket.close()
 
-# Uso
+# Usage
 async def main():
     client = EmitHubClient(
         base_url="http://localhost:8080",
@@ -827,10 +827,10 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### **Admin Panel (Gestión de Canales)**
+### **Admin Panel (Channel Management)**
 
 ```javascript
-// Funciones para gestionar canales desde panel de administración
+// Functions to manage channels from admin panel
 
 class EmitHubAdmin {
   constructor(baseUrl) {
@@ -889,13 +889,13 @@ class EmitHubAdmin {
   }
 }
 
-// Ejemplo de uso en panel de admin
+// Example usage in admin panel
 const admin = new EmitHubAdmin('http://localhost:8080');
 
-// Crear canal para turnos médicos
+// Create channel for medical queue
 const channel = await admin.createChannel({
-  name: 'Consultorio Cardiólogo',
-  description: 'Canal para turnos de cardiología',
+  name: 'Cardiologist Office',
+  description: 'Channel for cardiology queue',
   settings: {
     max_connections: 100,
     allow_client_messages: false,
@@ -904,16 +904,16 @@ const channel = await admin.createChannel({
   }
 });
 
-// Activar el canal
+// Activate the channel
 await admin.startChannel(channel.id);
 
-// Enviar turno
+// Send queue number
 await admin.broadcastMessage(channel.id, 'A015');
 ```
 
 ---
 
-## 🐳 Deploy
+## 🐳 Deployment
 
 ### **Docker**
 
@@ -963,3 +963,439 @@ services:
       timeout: 10s
       retries: 3
 ```
+
+### **Kubernetes**
+
+#### **deployment.yaml**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emit-hub
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: emit-hub
+  template:
+    metadata:
+      labels:
+        app: emit-hub
+    spec:
+      containers:
+      - name: emit-hub
+        image: emit-hub:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: EMIT_HUB_HOST
+          value: "0.0.0.0"
+        - name: EMIT_HUB_PORT
+          value: "8080"
+        - name: EMIT_HUB_LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/v1/ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+```
+
+#### **service.yaml**
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: emit-hub-service
+spec:
+  selector:
+    app: emit-hub
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  type: LoadBalancer
+```
+
+### **Production Deployment**
+
+#### **Systemd Service**
+```ini
+# /etc/systemd/system/emit-hub.service
+[Unit]
+Description=EmitHub Real-time Broadcasting Service
+After=network.target
+
+[Service]
+Type=simple
+User=emit-hub
+WorkingDirectory=/opt/emit-hub
+ExecStart=/opt/emit-hub/emit-hub
+Restart=always
+RestartSec=5
+Environment=EMIT_HUB_HOST=0.0.0.0
+Environment=EMIT_HUB_PORT=8080
+Environment=EMIT_HUB_LOG_LEVEL=info
+Environment=EMIT_HUB_DB_PATH=/var/lib/emit-hub/emit_hub.redb
+
+[Install]
+WantedBy=multi-user.target
+```
+
+#### **Nginx Reverse Proxy**
+```nginx
+upstream emit_hub {
+    server 127.0.0.1:8080;
+}
+
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://emit_hub;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 86400;
+    }
+}
+```
+
+---
+
+## 🔧 Development
+
+### **Project Structure**
+
+```
+emit-hub/
+├── src/
+│   ├── main.rs              # Application entry point
+│   ├── config.rs            # Configuration management
+│   ├── state.rs             # Application state
+│   ├── models/
+│   │   ├── mod.rs
+│   │   ├── channel.rs       # Channel data models
+│   │   └── message.rs       # Message data models
+│   ├── handlers/
+│   │   ├── mod.rs
+│   │   ├── channels.rs      # Channel REST endpoints
+│   │   ├── websocket.rs     # WebSocket handlers
+│   │   └── health.rs        # Health check endpoints
+│   └── utils/
+│       ├── mod.rs
+│       └── logging.rs       # Logging utilities
+├── tests/
+│   ├── integration_tests.rs
+│   └── websocket_tests.rs
+├── docs/
+│   ├── api.md
+│   └── deployment.md
+├── docker/
+│   ├── Dockerfile
+│   └── docker-compose.yml
+├── scripts/
+│   ├── setup.sh
+│   └── deploy.sh
+├── Cargo.toml
+├── Cargo.lock
+└── README.md
+```
+
+### **Development Setup**
+
+```bash
+# Clone and setup
+git clone https://github.com/your-org/emit-hub.git
+cd emit-hub
+
+# Install development dependencies
+cargo install cargo-watch cargo-tarpaulin
+
+# Setup git hooks
+cp scripts/pre-commit .git/hooks/
+chmod +x .git/hooks/pre-commit
+
+# Run in development mode with auto-reload
+cargo watch -x run
+
+# Run tests
+cargo test
+
+# Generate test coverage
+cargo tarpaulin --out Html
+```
+
+### **Testing**
+
+#### **Unit Tests**
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use actix_web::{test, App};
+
+    #[actix_web::test]
+    async fn test_create_channel() {
+        let app = test::init_service(
+            App::new()
+                .app_data(web::Data::new(app_state))
+                .service(create_channel)
+        ).await;
+
+        let req = test::TestRequest::post()
+            .uri("/api/v1/channels")
+            .set_json(&channel_data)
+            .to_request();
+
+        let resp = test::call_service(&app, req).await;
+        assert!(resp.status().is_success());
+    }
+}
+```
+
+#### **Integration Tests**
+```rust
+// tests/integration_tests.rs
+use tokio_tungstenite::{connect_async, tungstenite::Message};
+
+#[tokio::test]
+async fn test_websocket_connection() {
+    let server = start_test_server().await;
+    
+    let (ws_stream, _) = connect_async("ws://localhost:8080/api/v1/channels/test/ws")
+        .await
+        .expect("Failed to connect");
+
+    // Test connection and message handling
+    assert!(ws_stream.is_ok());
+}
+```
+
+#### **Load Testing**
+```bash
+# Using Artillery
+npm install -g artillery
+
+# Test WebSocket connections
+artillery run tests/load/websocket.yml
+
+# Test REST API
+artillery run tests/load/rest-api.yml
+```
+
+### **Performance Monitoring**
+
+#### **Metrics Collection**
+```rust
+use prometheus::{Encoder, TextEncoder, Counter, Histogram, register_counter, register_histogram};
+
+lazy_static! {
+    static ref HTTP_REQUESTS: Counter = register_counter!(
+        "http_requests_total", "Total HTTP requests"
+    ).unwrap();
+    
+    static ref WEBSOCKET_CONNECTIONS: Counter = register_counter!(
+        "websocket_connections_total", "Total WebSocket connections"
+    ).unwrap();
+    
+    static ref MESSAGE_DURATION: Histogram = register_histogram!(
+        "message_broadcast_duration_seconds", "Message broadcast duration"
+    ).unwrap();
+}
+
+#[get("/metrics")]
+async fn metrics() -> impl Responder {
+    let encoder = TextEncoder::new();
+    let metric_families = prometheus::gather();
+    let mut buffer = Vec::new();
+    encoder.encode(&metric_families, &mut buffer).unwrap();
+    
+    HttpResponse::Ok()
+        .content_type("text/plain; version=0.0.4")
+        .body(buffer)
+}
+```
+
+#### **Health Monitoring**
+```yaml
+# docker-compose.monitoring.yml
+version: '3.8'
+
+services:
+  emit-hub:
+    # ... your service config
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/grafana:/var/lib/grafana
+```
+
+### **Contributing**
+
+#### **Code Style**
+```bash
+# Format code
+cargo fmt
+
+# Lint code
+cargo clippy -- -D warnings
+
+# Check documentation
+cargo doc --no-deps --open
+```
+
+#### **Commit Convention**
+```bash
+# Format: type(scope): description
+feat(channels): add channel persistence support
+fix(websocket): handle connection timeout properly
+docs(readme): update installation instructions
+perf(broadcast): optimize message delivery
+```
+
+#### **Pull Request Process**
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Make changes and add tests
+4. Ensure all tests pass: `cargo test`
+5. Format code: `cargo fmt`
+6. Submit pull request
+
+### **Debugging**
+
+#### **Enable Debug Logging**
+```bash
+RUST_LOG=debug cargo run
+RUST_LOG=emit_hub=trace cargo run
+```
+
+#### **Profiling**
+```bash
+# Install profiling tools
+cargo install flamegraph
+
+# Generate flame graph
+cargo flamegraph --bin emit-hub
+
+# Memory profiling with valgrind
+cargo build --release
+valgrind --tool=massif target/release/emit-hub
+```
+
+#### **Database Inspection**
+```rust
+// src/utils/db_tools.rs
+pub async fn inspect_database(db_path: &str) -> anyhow::Result<()> {
+    let db = Database::open(db_path)?;
+    let read_txn = db.begin_read()?;
+    let table = read_txn.open_table(CHANNELS_TABLE)?;
+    
+    println!("Database contents:");
+    for result in table.iter()? {
+        let (key, value) = result?;
+        let channel: Channel = serde_json::from_slice(value.value())?;
+        println!("Channel {}: {:?}", key.value(), channel);
+    }
+    
+    Ok(())
+}
+```
+
+---
+
+## 🚀 Production Checklist
+
+### **Pre-deployment**
+- [ ] All tests passing
+- [ ] Performance benchmarks met
+- [ ] Security audit completed
+- [ ] Documentation updated
+- [ ] Monitoring configured
+- [ ] Backup strategy implemented
+
+### **Security**
+- [ ] HTTPS/WSS in production
+- [ ] Rate limiting configured
+- [ ] CORS properly set
+- [ ] Input validation enabled
+- [ ] Error messages sanitized
+- [ ] Dependencies updated
+
+### **Monitoring**
+- [ ] Health checks enabled
+- [ ] Metrics collection active
+- [ ] Log aggregation configured
+- [ ] Alerting rules set
+- [ ] Dashboard created
+
+### **Backup & Recovery**
+- [ ] Database backup automated
+- [ ] Recovery procedures tested
+- [ ] Disaster recovery plan documented
+- [ ] RTO/RPO defined
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### **Areas for Contribution**
+- 🐛 **Bug Reports**: Help us identify and fix issues
+- ✨ **Feature Requests**: Suggest new functionality
+- 📚 **Documentation**: Improve guides and examples
+- 🧪 **Testing**: Add test cases and scenarios
+- 🎨 **Client Libraries**: Build clients for different languages
+- 🔧 **Tools**: Create utilities and integrations
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Actix-web** team for the excellent web framework
+- **ReDB** developers for the embedded database
+- **Rust** community for the amazing ecosystem
+- All contributors and users of EmitHub
+
+---
+- 🐛 **Issues**: [GitHub Issues](https://github.com/JhonaCodes/emit-hub/issues)
+---
+
+**Made with ❤️ by Jhonacodes**
