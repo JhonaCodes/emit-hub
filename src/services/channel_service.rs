@@ -9,7 +9,7 @@ pub struct ChannelService;
 
 impl ChannelService {
     pub async fn create_channel(
-        state: Arc<AppState>,
+        state: &AppState,
         request: CreateChannelRequest,
     ) -> Result<Channel> {
         let channel = Channel {
@@ -29,7 +29,7 @@ impl ChannelService {
         Ok(channel)
     }
 
-    pub async fn start_channel(state: Arc<AppState>, channel_id: Uuid) -> Result<Channel> {
+    pub async fn start_channel(state: &AppState, channel_id: Uuid) -> Result<Channel> {
         let mut active_channels = state.active_channels.write().await;
 
         if let Some(channel) = active_channels.get_mut(&channel_id) {
@@ -44,7 +44,7 @@ impl ChannelService {
         }
     }
 
-    pub async fn pause_channel(state: Arc<AppState>, channel_id: Uuid) -> Result<Channel> {
+    pub async fn pause_channel(state: &AppState, channel_id: Uuid) -> Result<Channel> {
         state.update_channel_status(channel_id, ChannelStatus::Paused).await?;
 
         if let Some(channel) = state.get_channel(&channel_id).await {
@@ -55,7 +55,7 @@ impl ChannelService {
         }
     }
 
-    pub async fn stop_channel(state: Arc<AppState>, channel_id: Uuid) -> Result<Channel> {
+    pub async fn stop_channel(state: &AppState, channel_id: Uuid) -> Result<Channel> {
         state.update_channel_status(channel_id, ChannelStatus::Stopped).await?;
 
         // Cerrar todas las conexiones del canal
@@ -76,7 +76,7 @@ impl ChannelService {
         }
     }
 
-    pub async fn list_channels(state: Arc<AppState>) -> Vec<Channel> {
+    pub async fn list_channels(state: &AppState) -> Vec<Channel> {
         state.active_channels.read().await.values().cloned().collect()
     }
 }

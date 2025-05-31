@@ -1,0 +1,1498 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "EmitHub API Collection - Fixed",
+    "description": "Complete collection for testing EmitHub real-time broadcasting microservice.\n\n🚀 **EmitHub** is a robust microservice for real-time communication built with Rust, Actix-web, and ReDB.\n\n## 📋 Quick Start:\n1. Start EmitHub server: `cargo run`\n2. Run \"Health Check\" to verify server is running\n3. Create a channel using \"Create Channel\"\n4. Start the channel with \"Start Channel\"\n5. Use WebSocket client to connect\n6. Send broadcasts using \"Broadcast Message\"\n\n## 🔧 Environment Setup:\n- Set `{{baseUrl}}` to your EmitHub server URL (default: http://localhost:8080)\n- Channel IDs are automatically saved from responses\n\n## 📚 Documentation:\nVisit `/docs` endpoint for complete API documentation.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345678"
+  },
+  "item": [
+    {
+      "name": "🏠 Service Info",
+      "item": [
+        {
+          "name": "Service Information",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has service info\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('service');",
+                  "    pm.expect(jsonData).to.have.property('version');",
+                  "    pm.expect(jsonData.service).to.eql('EmitHub');",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 500ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Get general service information including version, endpoints, and current status."
+          },
+          "response": []
+        },
+        {
+          "name": "API Documentation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/docs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "docs"
+              ]
+            },
+            "description": "Access the interactive API documentation with examples and usage instructions."
+          },
+          "response": []
+        }
+      ],
+      "description": "Basic service information and documentation endpoints."
+    },
+    {
+      "name": "❤️ Health Checks",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Service is healthy\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('healthy');",
+                  "    pm.expect(jsonData.service).to.eql('emit-hub');",
+                  "});",
+                  "",
+                  "pm.test(\"Response has version and timestamp\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('version');",
+                  "    pm.expect(jsonData).to.have.property('timestamp');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
+            },
+            "description": "Check if the EmitHub service is running and healthy. This endpoint should return 200 if everything is working correctly."
+          },
+          "response": []
+        },
+        {
+          "name": "Readiness Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Service is ready\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('ready');",
+                  "});",
+                  "",
+                  "pm.test(\"All checks are OK\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.checks.database).to.eql('ok');",
+                  "    pm.expect(jsonData.checks.memory).to.eql('ok');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ready",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ready"
+              ]
+            },
+            "description": "Check if the service is ready to accept requests. Includes database connectivity and other readiness checks."
+          },
+          "response": []
+        }
+      ],
+      "description": "Health and readiness checks for monitoring and load balancers."
+    },
+    {
+      "name": "📡 Channel Management",
+      "item": [
+        {
+          "name": "Create Channel - Basic",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Channel created successfully\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData.status).to.eql('Created');",
+                  "    ",
+                  "    // Save channel ID for other requests",
+                  "    pm.environment.set('channelId', jsonData.id);",
+                  "    pm.environment.set('channelName', jsonData.name);",
+                  "});",
+                  "",
+                  "pm.test(\"Channel has default settings\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.settings).to.have.property('max_connections');",
+                  "    pm.expect(jsonData.settings).to.have.property('allow_client_messages');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Channel Basic\",\n  \"description\": \"Basic channel for testing purposes\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels"
+              ]
+            },
+            "description": "Create a basic channel with default settings. The channel ID will be saved automatically for use in other requests."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Channel - Advanced",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Channel created with custom settings\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.settings.max_connections).to.eql(500);",
+                  "    pm.expect(jsonData.settings.allow_client_messages).to.eql(false);",
+                  "    pm.expect(jsonData.settings.persist_messages).to.eql(true);",
+                  "    ",
+                  "    // Save as secondary channel",
+                  "    pm.environment.set('channelId2', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Medical Turns System\",\n  \"description\": \"Channel for medical appointment system with custom settings\",\n  \"settings\": {\n    \"max_connections\": 500,\n    \"allow_client_messages\": false,\n    \"persist_messages\": true,\n    \"rate_limit_per_minute\": 30\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels"
+              ]
+            },
+            "description": "Create a channel with custom settings for production use. This example shows a medical turns system configuration."
+          },
+          "response": []
+        },
+        {
+          "name": "List All Channels",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Channels have required properties\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.length > 0) {",
+                  "        const channel = jsonData[0];",
+                  "        pm.expect(channel).to.have.property('id');",
+                  "        pm.expect(channel).to.have.property('name');",
+                  "        pm.expect(channel).to.have.property('status');",
+                  "        pm.expect(channel).to.have.property('settings');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels"
+              ]
+            },
+            "description": "Retrieve a list of all channels in the system, including their current status and settings."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Channel Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Channel details are correct\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const expectedId = pm.environment.get('channelId');",
+                  "    pm.expect(jsonData.id).to.eql(expectedId);",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}"
+              ]
+            },
+            "description": "Get detailed information about a specific channel using the channel ID saved from previous requests."
+          },
+          "response": []
+        }
+      ],
+      "description": "Create, list, and manage broadcasting channels."
+    },
+    {
+      "name": "🎛️ Channel Control",
+      "item": [
+        {
+          "name": "Start Channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Channel is now active\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('Active');",
+                  "});",
+                  "",
+                  "pm.test(\"Updated timestamp is recent\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const updatedAt = new Date(jsonData.updated_at);",
+                  "    const now = new Date();",
+                  "    const diffInSeconds = (now - updatedAt) / 1000;",
+                  "    pm.expect(diffInSeconds).to.be.below(10); // Within 10 seconds",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "start"
+              ]
+            },
+            "description": "Start the channel emission. This allows WebSocket clients to connect and receive broadcasts. Channel must be started before clients can connect."
+          },
+          "response": []
+        },
+        {
+          "name": "Pause Channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Channel is now paused\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('Paused');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/pause",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "pause"
+              ]
+            },
+            "description": "Pause the channel emission. Existing connections remain but new connections are rejected until the channel is started again."
+          },
+          "response": []
+        },
+        {
+          "name": "Resume Channel (Start Again)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Channel is active again\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('Active');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "start"
+              ]
+            },
+            "description": "Resume a paused channel by starting it again. This allows new WebSocket connections."
+          },
+          "response": []
+        },
+        {
+          "name": "Stop Channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Channel is now stopped\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('Stopped');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/stop",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "stop"
+              ]
+            },
+            "description": "Stop the channel emission completely. This closes all existing WebSocket connections and prevents new ones."
+          },
+          "response": []
+        }
+      ],
+      "description": "Control channel emission states: start, pause, and stop."
+    },
+    {
+      "name": "📢 Broadcasting",
+      "item": [
+        {
+          "name": "Broadcast Simple Message",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure channel is active before broadcasting",
+                  "const channelId = pm.environment.get('channelId');",
+                  "if (!channelId) {",
+                  "    throw new Error('Channel ID not set. Please create and start a channel first.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Message was sent successfully\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData).to.have.property('sent_to');",
+                  "    pm.expect(jsonData.status).to.eql('success');",
+                  "});",
+                  "",
+                  "pm.test(\"Sent to count is a number\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.sent_to).to.be.a('number');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"A004\",\n  \"message_type\": \"Broadcast\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/broadcast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "broadcast"
+              ]
+            },
+            "description": "Send a simple broadcast message (like a turn number) to all connected clients. Make sure the channel is active before sending."
+          },
+          "response": []
+        },
+        {
+          "name": "Broadcast Turn with Client Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Broadcast successful\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('success');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"B015 - Dr. García\",\n  \"message_type\": \"Broadcast\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/broadcast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "broadcast"
+              ]
+            },
+            "description": "Broadcast a turn number with additional information like doctor name or location."
+          },
+          "response": []
+        },
+        {
+          "name": "Broadcast JSON Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Complex message sent\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('success');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"{\\\"turn\\\": \\\"C023\\\", \\\"doctor\\\": \\\"Dr. Smith\\\", \\\"room\\\": \\\"205\\\", \\\"priority\\\": \\\"urgent\\\", \\\"timestamp\\\": \\\"2024-06-01T10:30:00Z\\\"}\",\n  \"message_type\": \"Broadcast\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/broadcast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "broadcast"
+              ]
+            },
+            "description": "Send complex structured data as JSON string. Clients can parse this for rich notifications."
+          },
+          "response": []
+        },
+        {
+          "name": "System Alert Broadcast",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Alert sent successfully\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('success');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"🚨 EMERGENCY: Please evacuate the building immediately. This is not a drill.\",\n  \"message_type\": \"Broadcast\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/broadcast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "broadcast"
+              ]
+            },
+            "description": "Send emergency or system-wide alerts to all connected clients."
+          },
+          "response": []
+        }
+      ],
+      "description": "Send broadcast messages to all connected clients in a channel."
+    },
+    {
+      "name": "🧪 Test Scenarios",
+      "item": [
+        {
+          "name": "Broadcast to Inactive Channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 or 403\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 403]);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message indicates channel is not active\", function () {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText.toLowerCase()).to.include('not');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"This should fail\",\n  \"message_type\": \"Broadcast\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId2}}/broadcast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId2}}",
+                "broadcast"
+              ]
+            },
+            "description": "Test broadcasting to an inactive channel. This should fail with an error message."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Non-existent Channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test(\"Error message indicates channel not found\", function () {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText.toLowerCase()).to.include('not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/00000000-0000-0000-0000-000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "00000000-0000-0000-0000-000000000000"
+              ]
+            },
+            "description": "Test accessing a non-existent channel. Should return 404 Not Found."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Channel with Invalid Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error response indicates bad request\", function () {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText.toLowerCase()).to.include('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"settings\": {\n    \"max_connections\": -1,\n    \"invalid_field\": \"this should fail\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels"
+              ]
+            },
+            "description": "Test creating a channel with invalid data. Should return an error."
+          },
+          "response": []
+        },
+        {
+          "name": "Start Non-existent Channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 or 404\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 404]);",
+                  "});",
+                  "",
+                  "pm.test(\"Error indicates channel not found\", function () {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText.toLowerCase()).to.include('not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/99999999-9999-9999-9999-999999999999/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "99999999-9999-9999-9999-999999999999",
+                "start"
+              ]
+            },
+            "description": "Test starting a non-existent channel. Should return an error."
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid JSON Broadcast",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Error indicates bad request\", function () {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText.toLowerCase()).to.include('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Valid content\",\n  \"message_type\": \"Invalid\",\n  \"extra_field\": \"not allowed\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/broadcast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "broadcast"
+              ]
+            },
+            "description": "Test sending a broadcast with invalid fields. Should return an error."
+          },
+          "response": []
+        }
+      ],
+      "description": "Test error scenarios and edge cases to ensure proper error handling."
+    },
+    {
+      "name": "🔄 Complete Workflow",
+      "item": [
+        {
+          "name": "1. Create Workflow Channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Channel created successfully\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set('workflowChannelId', jsonData.id);",
+                  "    pm.environment.set('workflowChannelName', jsonData.name);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Complete Workflow Demo\",\n  \"description\": \"Demonstrates complete EmitHub workflow\",\n  \"settings\": {\n    \"max_connections\": 100,\n    \"allow_client_messages\": true,\n    \"persist_messages\": false,\n    \"rate_limit_per_minute\": 60\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels"
+              ]
+            },
+            "description": "Step 1: Create a new channel for the complete workflow demonstration."
+          },
+          "response": []
+        },
+        {
+          "name": "2. Start Workflow Channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Channel started successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('Active');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{workflowChannelId}}/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{workflowChannelId}}",
+                "start"
+              ]
+            },
+            "description": "Step 2: Start the channel to allow WebSocket connections."
+          },
+          "response": []
+        },
+        {
+          "name": "3. Send Welcome Message",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Welcome message sent\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"🎉 Welcome to EmitHub! The system is now active and ready to receive connections.\",\n  \"message_type\": \"Broadcast\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{workflowChannelId}}/broadcast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{workflowChannelId}}",
+                "broadcast"
+              ]
+            },
+            "description": "Step 3: Send a welcome message to any connected clients."
+          },
+          "response": []
+        },
+        {
+          "name": "4. Send Sample Turns",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Turn messages sent successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"A001\",\n  \"message_type\": \"Broadcast\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{workflowChannelId}}/broadcast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{workflowChannelId}}",
+                "broadcast"
+              ]
+            },
+            "description": "Step 4: Send sample turn numbers to demonstrate the system working."
+          },
+          "response": []
+        },
+        {
+          "name": "5. Verify Channel Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Channel is still active\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('Active');",
+                  "    pm.expect(jsonData.name).to.eql('Complete Workflow Demo');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{workflowChannelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{workflowChannelId}}"
+              ]
+            },
+            "description": "Step 5: Verify the channel is still active and working correctly."
+          },
+          "response": []
+        },
+        {
+          "name": "6. Cleanup - Stop Channel",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Channel stopped successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('Stopped');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{workflowChannelId}}/stop",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{workflowChannelId}}",
+                "stop"
+              ]
+            },
+            "description": "Step 6: Clean up by stopping the channel and closing all connections."
+          },
+          "response": []
+        }
+      ],
+      "description": "Complete workflow demonstrating the typical EmitHub usage pattern from creation to cleanup."
+    },
+    {
+      "name": "📊 Performance Tests",
+      "item": [
+        {
+          "name": "Load Test - Multiple Broadcasts",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure we have an active channel",
+                  "const channelId = pm.environment.get('channelId');",
+                  "if (!channelId) {",
+                  "    throw new Error('No active channel found. Please run the workflow first.');",
+                  "}",
+                  "",
+                  "// Generate random turn number",
+                  "const turnNumber = 'T' + Math.floor(Math.random() * 9999).toString().padStart(3, '0');",
+                  "pm.environment.set('randomTurn', turnNumber);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Broadcast completed within acceptable time\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000); // Less than 1 second",
+                  "});",
+                  "",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response indicates success\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('success');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"{{randomTurn}}\",\n  \"message_type\": \"Broadcast\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/broadcast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "broadcast"
+              ]
+            },
+            "description": "Performance test: Send multiple broadcasts quickly to test system responsiveness. Run this multiple times to simulate load."
+          },
+          "response": []
+        },
+        {
+          "name": "Stress Test - Large Message",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate a large message (but within limits)",
+                  "const largeContent = 'X'.repeat(1000) + ' - Large message test for performance evaluation';",
+                  "pm.environment.set('largeMessage', largeContent);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Large message handled successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time acceptable for large message\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000); // Less than 2 seconds",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"{{largeMessage}}\",\n  \"message_type\": \"Broadcast\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/channels/{{channelId}}/broadcast",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "channels",
+                "{{channelId}}",
+                "broadcast"
+              ]
+            },
+            "description": "Stress test: Send a large message to test system performance with bigger payloads."
+          },
+          "response": []
+        }
+      ],
+      "description": "Performance and stress tests to validate system responsiveness and limits."
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "id": "global-prerequest",
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request script",
+          "// Set default baseUrl if not set",
+          "if (!pm.environment.get('baseUrl')) {",
+          "    pm.environment.set('baseUrl', 'http://localhost:8080');",
+          "}",
+          "",
+          "// Add timestamp for tracking",
+          "pm.environment.set('requestTimestamp', new Date().toISOString());",
+          "",
+          "// Log request info",
+          "console.log(`🚀 Executing: ${pm.info.requestName}`);"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "id": "global-test",
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script",
+          "// Log request details for debugging",
+          "console.log(`📊 ${pm.request.method} ${pm.request.url}`);",
+          "console.log(`📈 Response: ${pm.response.status} ${pm.response.code} (${pm.response.responseTime}ms)`);",
+          "",
+          "// Basic tests for all requests",
+          "pm.test(`✅ Request completed (${pm.response.code})`, function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 403, 404, 500]);",
+          "});",
+          "",
+          "pm.test(\"⚡ Response time is reasonable\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000); // 5 seconds max",
+          "});",
+          "",
+          "// Log success message for passed tests",
+          "if (pm.response.code >= 200 && pm.response.code < 300) {",
+          "    console.log(`✅ ${pm.info.requestName} completed successfully`);",
+          "} else if (pm.response.code >= 400) {",
+          "    console.log(`⚠️ ${pm.info.requestName} returned error (expected for some tests)`);",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string",
+      "description": "Base URL for EmitHub server"
+    },
+    {
+      "key": "channelId",
+      "value": "",
+      "type": "string",
+      "description": "Main test channel ID (auto-populated)"
+    },
+    {
+      "key": "channelId2",
+      "value": "",
+      "type": "string",
+      "description": "Secondary test channel ID (auto-populated)"
+    },
+    {
+      "key": "workflowChannelId",
+      "value": "",
+      "type": "string",
+      "description": "Workflow demo channel ID (auto-populated)"
+    },
+    {
+      "key": "channelName",
+      "value": "",
+      "type": "string",
+      "description": "Channel name (auto-populated)"
+    },
+    {
+      "key": "workflowChannelName",
+      "value": "",
+      "type": "string",
+      "description": "Workflow channel name (auto-populated)"
+    },
+    {
+      "key": "randomTurn",
+      "value": "",
+      "type": "string",
+      "description": "Random turn number for performance tests (auto-generated)"
+    },
+    {
+      "key": "largeMessage",
+      "value": "",
+      "type": "string",
+      "description": "Large message content for stress tests (auto-generated)"
+    },
+    {
+      "key": "requestTimestamp",
+      "value": "",
+      "type": "string",
+      "description": "Timestamp of current request (auto-populated)"
+    }
+  ]
+}

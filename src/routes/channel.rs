@@ -2,40 +2,31 @@ use crate::models::channel::{CreateChannelRequest, UpdateChannelStatusRequest};
 use crate::models::message::BroadcastRequest;
 
 use crate::state::AppState;
-use actix_web::{web, HttpResponse, Result};
+use actix_web::{get, post, put, web, HttpResponse, Result};
 use std::sync::Arc;
 use uuid::Uuid;
 use crate::services::channel_service::ChannelService;
 use crate::services::message_service::MessageService;
 
-pub fn configure(cfg: &mut web::ServiceConfig) {
-    cfg.service(
-        web::scope("/channels")
-            .route("", web::post().to(create_channel))
-            .route("", web::get().to(list_channels))
-            .route("/{channel_id}", web::get().to(get_channel))
-            .route("/{channel_id}/start", web::put().to(start_channel))
-            .route("/{channel_id}/pause", web::put().to(pause_channel))
-            .route("/{channel_id}/stop", web::put().to(stop_channel))
-            .route("/{channel_id}/broadcast", web::post().to(broadcast_message)),
-    );
-}
-
+#[post("/channels")]
 async fn create_channel(
     state: web::Data<AppState>,
     request: web::Json<CreateChannelRequest>,
 ) -> Result<HttpResponse> {
-    match ChannelService::create_channel(state.get_ref().clone().into(), request.into_inner()).await {
+    match ChannelService::create_channel(state.get_ref().clone(), request.into_inner()).await {
         Ok(channel) => Ok(HttpResponse::Created().json(channel)),
         Err(e) => Ok(HttpResponse::BadRequest().json(format!("Error: {}", e))),
     }
 }
 
+
+#[get("/channels")]
 async fn list_channels(state: web::Data<AppState>) -> Result<HttpResponse> {
-    let channels = ChannelService::list_channels(state.get_ref().clone().into()).await;
+    let channels = ChannelService::list_channels(state.get_ref().clone()).await;
     Ok(HttpResponse::Ok().json(channels))
 }
 
+#[get("/channels/{channel_id}")]
 async fn get_channel(
     state: web::Data<AppState>,
     path: web::Path<Uuid>,
@@ -48,30 +39,35 @@ async fn get_channel(
     }
 }
 
+
+#[put("/channels/{channel_id}/start")]
 async fn start_channel(
     state: web::Data<AppState>,
     path: web::Path<Uuid>,
 ) -> Result<HttpResponse> {
     let channel_id = path.into_inner();
 
-    match ChannelService::start_channel(state.get_ref().clone().into(), channel_id).await {
+    match ChannelService::start_channel(state.get_ref().clone(), channel_id).await {
         Ok(channel) => Ok(HttpResponse::Ok().json(channel)),
         Err(e) => Ok(HttpResponse::BadRequest().json(format!("Error: {}", e))),
     }
 }
 
+#[put("/channels/{channel_id}/pause")]
 async fn pause_channel(
     state: web::Data<AppState>,
     path: web::Path<Uuid>,
 ) -> Result<HttpResponse> {
     let channel_id = path.into_inner();
 
-    match ChannelService::pause_channel(state.get_ref().clone().into(), channel_id).await {
+    match ChannelService::pause_channel(state.get_ref().clone(), channel_id).await {
         Ok(channel) => Ok(HttpResponse::Ok().json(channel)),
         Err(e) => Ok(HttpResponse::BadRequest().json(format!("Error: {}", e))),
     }
 }
 
+
+#[put("/channels/{channel_id}/stop")]
 async fn stop_channel(
     state: web::Data<AppState>,
     path: web::Path<Uuid>,
@@ -84,6 +80,8 @@ async fn stop_channel(
     }
 }
 
+
+#[post("/channels/{channel_id}/broadcast")]
 async fn broadcast_message(
     state: web::Data<AppState>,
     path: web::Path<Uuid>,
@@ -92,7 +90,7 @@ async fn broadcast_message(
     let channel_id = path.into_inner();
 
     match MessageService::broadcast_message(
-        state.get_ref().clone().into(),
+        state.get_ref().clone(),
         channel_id,
         request.into_inner(),
     ).await {

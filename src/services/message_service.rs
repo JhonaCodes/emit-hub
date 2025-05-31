@@ -9,7 +9,7 @@ pub struct MessageService;
 
 impl MessageService {
     pub async fn broadcast_message(
-        state: Arc<AppState>,
+        state: &AppState,
         channel_id: Uuid,
         request: BroadcastRequest,
     ) -> Result<(BroadcastMessage, usize)> {
