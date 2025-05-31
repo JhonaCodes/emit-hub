@@ -1,23 +1,27 @@
 use crate::models::message::{BroadcastMessage, BroadcastRequest, MessageSender, MessageType};
 use crate::state::AppState;
 use anyhow::Result;
-use std::sync::Arc;
-use uuid::Uuid;
 use chrono::Utc;
+use uuid::Uuid;
 
 pub struct MessageService;
 
 impl MessageService {
     pub async fn broadcast_message(
-        state: Arc<AppState>,
+        state: &AppState,
         channel_id: Uuid,
         request: BroadcastRequest,
     ) -> Result<(BroadcastMessage, usize)> {
         // Verificar que el canal existe y está activo
-        let channel = state.get_channel(&channel_id).await
+        let channel = state
+            .get_channel(&channel_id)
+            .await
             .ok_or_else(|| anyhow::anyhow!("Channel not found"))?;
 
-        if !matches!(channel.status, crate::models::channel::ChannelStatus::Active) {
+        if !matches!(
+            channel.status,
+            crate::models::channel::ChannelStatus::Active
+        ) {
             anyhow::bail!("Channel is not active");
         }
 
@@ -48,7 +52,9 @@ impl MessageService {
         let json_message = serde_json::to_string(&ws_response)?;
 
         // Enviar a todos los clientes del canal
-        let sent_count = state.broadcast_to_channel(&channel_id, &json_message).await?;
+        let sent_count = state
+            .broadcast_to_channel(&channel_id, &json_message)
+            .await?;
 
         tracing::info!(
             "Broadcasted message to {} clients in channel {} ({})",

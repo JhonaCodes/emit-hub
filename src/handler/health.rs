@@ -1,11 +1,8 @@
-use actix_web::{web, HttpResponse, Result};
+use actix_web::{get, HttpResponse, Result};
 use serde_json::json;
 
-pub fn configure(cfg: &mut web::ServiceConfig) {
-    cfg.route("/health", web::get().to(health_check))
-        .route("/ready", web::get().to(readiness_check));
-}
 
+#[get("/health")]
 async fn health_check() -> Result<HttpResponse> {
     Ok(HttpResponse::Ok().json(json!({
         "status": "healthy",
@@ -15,9 +12,9 @@ async fn health_check() -> Result<HttpResponse> {
     })))
 }
 
+#[get("/ready")]
 async fn readiness_check() -> Result<HttpResponse> {
-    // Aquí puedes agregar verificaciones más complejas
-    // como conectividad a la base de datos, etc.
+    // We can improve logic here
     Ok(HttpResponse::Ok().json(json!({
         "status": "ready",
         "checks": {

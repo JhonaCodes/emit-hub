@@ -7,8 +7,8 @@ use std::sync::Arc;
 use tokio::sync::{Mutex, RwLock};
 use uuid::Uuid;
 
-const CHANNELS_TABLE: TableDefinition<&str, &str> = TableDefinition::new("channels");
-const MESSAGES_TABLE: TableDefinition<&str, &str> = TableDefinition::new("messages");
+pub const CHANNELS_TABLE: TableDefinition<&str, &str> = TableDefinition::new("channels");
+pub const MESSAGES_TABLE: TableDefinition<&str, &str> = TableDefinition::new("messages");
 
 pub struct AppState {
     pub db: Arc<Database>,
@@ -48,7 +48,7 @@ impl AppState {
         let mut active_channels = self.active_channels.write().await;
 
         for result in table.iter()? {
-            let (key, value) = result?;
+            let (_, value) = result?;
             let channel: Channel = serde_json::from_str(value.value())?;
 
             // Solo cargar canales que estaban activos o pausados
@@ -130,4 +130,5 @@ impl AppState {
 
         Ok(sent_count)
     }
+    
 }

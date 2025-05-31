@@ -1,16 +1,13 @@
 use crate::models::message::{WebSocketResponse, MessageType, MessageSender, BroadcastMessage};
 use crate::state::AppState;
-use actix_web::{web, HttpRequest, HttpResponse, Result, Error};
+use actix_web::{web, HttpRequest, HttpResponse, Result, Error, get, Responder};
 use actix_ws::AggregatedMessage;
 use futures_util::StreamExt;
-use std::sync::Arc;
+
 use uuid::Uuid;
 use chrono::Utc;
 
-pub fn configure(cfg: &mut web::ServiceConfig) {
-    cfg.route("/channels/{channel_id}/ws", web::get().to(websocket_handler));
-}
-
+#[get("/channels/{channel_id}/ws")]
 async fn websocket_handler(
     req: HttpRequest,
     stream: web::Payload,
@@ -63,15 +60,14 @@ async fn websocket_handler(
         })),
     };
 
-    let welcome_json = serde_json::to_string(&welcome_msg).unwrap();
+    let welcome_json = serde_json::to_string(&welcome_msg)?;
     let _ = session.text(welcome_json).await;
 
     // Procesar mensajes entrantes
     let mut stream = stream
         .aggregate_continuations()
         .max_continuation_size(2_usize.pow(20));
-
-    let state_clone: Arc<AppState> = state.get_ref().clone().into();
+    let state_clone = state.clone();
     let mut session_clone = session.clone();
 
     actix_web::rt::spawn(async move {
@@ -132,4 +128,25 @@ async fn websocket_handler(
     });
 
     Ok(res)
+}
+
+
+#[get("/logs")]
+async fn logs_handler() -> impl Responder {
+    HttpResponse::Ok()
+        .content_type("text/html")
+        .body(r#"
+        <html>
+        <head>
+            <title>EmitHub Logs</title>
+            <meta http-equiv="refresh" content="5">
+        </head>
+        <body>
+            <h1>🚀 EmitHub Live Logs</h1>
+            <pre id="logs" style="background: black; color: lime; padding: 20px;">
+            Ver logs en terminal...
+            </pre>
+        </body>
+        </html>
+        "#)
 }

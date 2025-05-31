@@ -1,7 +1,5 @@
-// src/config.rs
 use serde::{Deserialize, Serialize};
 use std::env;
-use std::path::PathBuf;
 
 /// Configuración principal de EmitHub
 /// Puede ser cargada desde variables de entorno o archivo de configuración
@@ -232,19 +230,6 @@ impl Config {
         Ok(config)
     }
 
-    /// Cargar configuración desde archivo TOML
-    pub fn from_file<P: Into<PathBuf>>(path: P) -> anyhow::Result<Self> {
-        let path = path.into();
-        let content = std::fs::read_to_string(&path)
-            .map_err(|e| anyhow::anyhow!("Failed to read config file {:?}: {}", path, e))?;
-
-        let config: Config = toml::from_str(&content)
-            .map_err(|e| anyhow::anyhow!("Failed to parse config file {:?}: {}", path, e))?;
-
-        config.validate()?;
-        Ok(config)
-    }
-
     /// Validar que la configuración sea correcta
     fn validate(&self) -> anyhow::Result<()> {
         if self.port == 0 {
@@ -278,48 +263,7 @@ impl Config {
 
         Ok(())
     }
-
-    /// Generar archivo de configuración de ejemplo
-    pub fn generate_example_config() -> anyhow::Result<String> {
-        let config = Config::default();
-        toml::to_string_pretty(&config)
-            .map_err(|e| anyhow::anyhow!("Failed to serialize example config: {}", e))
-    }
-
-    /// Mostrar todas las variables de entorno disponibles
-    pub fn show_env_vars() {
-        println!("🔧 EmitHub Environment Variables:");
-        println!();
-        println!("Server Configuration:");
-        println!("  EMIT_HUB_HOST                    - Server host (default: 127.0.0.1)");
-        println!("  EMIT_HUB_PORT                    - Server port (default: 8080)");
-        println!("  EMIT_HUB_LOG_LEVEL               - Log level (default: info)");
-        println!();
-        println!("Database Configuration:");
-        println!("  EMIT_HUB_DB_PATH                 - ReDB database file path (default: emit_hub.redb)");
-        println!();
-        println!("Connection Limits:");
-        println!("  EMIT_HUB_MAX_CONNECTIONS         - Max connections per channel (default: 1000)");
-        println!("  EMIT_HUB_MESSAGE_SIZE_LIMIT      - Max message size in bytes (default: 1048576)");
-        println!();
-        println!("CORS Configuration:");
-        println!("  EMIT_HUB_CORS_ORIGINS            - Allowed origins, comma-separated");
-        println!();
-        println!("WebSocket Configuration:");
-        println!("  EMIT_HUB_WS_TIMEOUT              - Connection timeout in seconds (default: 30)");
-        println!("  EMIT_HUB_WS_PING_INTERVAL        - Ping interval in seconds (default: 30)");
-        println!();
-        println!("Persistence Configuration:");
-        println!("  EMIT_HUB_PERSIST_MESSAGES        - Persist messages by default (default: false)");
-        println!("  EMIT_HUB_MESSAGE_RETENTION_DAYS  - Days to keep messages (default: 30)");
-        println!("  EMIT_HUB_AUTO_BACKUP             - Enable automatic backups (default: false)");
-        println!();
-        println!("Example:");
-        println!("  export EMIT_HUB_HOST=0.0.0.0");
-        println!("  export EMIT_HUB_PORT=3000");
-        println!("  export EMIT_HUB_MAX_CONNECTIONS=5000");
-        println!("  cargo run");
-    }
+    
 }
 
 #[cfg(test)]
